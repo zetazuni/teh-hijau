@@ -1,0 +1,8 @@
+# Static site: no build step. Serve v2 at the site root.
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/teh-hijau-shopfront-v2.html"
+  status = 200
