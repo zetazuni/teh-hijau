@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teh Hijau — for Nurul Athirah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  :root{ --dark:#241812; --cream:#f5ebd8; --lamp:#f0b86e; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{
+    height:100%; overflow:hidden; font-family:'Quicksand',sans-serif; color:var(--cream);
+    background: radial-gradient(ellipse at 50% 42%, #2a2044 0%, #1a1530 45%, #100c1e 80%, #0a0714 100%);
+  }
+  button{ font-family:'Space Mono',monospace; }
+
+  #bg-stars{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  #bg-stars span{ position:absolute; border-radius:50%; background:#f5ebd8; }
+  #bg-name-fireflies{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .name-firefly{
+    position:absolute; font-family:'Caveat',cursive; font-weight:700;
+    font-size:clamp(1rem, 2vw, 1.5rem); color:#f5dca0; opacity:0; white-space:nowrap;
+    text-shadow:0 0 6px rgba(240,184,110,0.85), 0 0 18px rgba(240,184,110,0.5);
+  }
+  #bg-glow{
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:min(110vw,1300px); height:min(80vh,780px); z-index:0; pointer-events:none;
+    background: radial-gradient(ellipse at center, rgba(240,184,110,0.10) 0%, rgba(240,184,110,0) 70%);
+  }
+
+  #scene{ position:relative; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:1; }
+
+  #start-screen{
+    position:absolute; inset:0; z-index:100;
+    background: radial-gradient(ellipse at 50% 40%, #3a2a30, var(--dark) 80%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    text-align:center; cursor:pointer;
+  }
+  #start-screen .dedication{ font-family:'Caveat',cursive; font-size:1.4rem; color:var(--lamp); opacity:0.9; }
+  #start-screen h1{ font-family:'Caveat',cursive; font-weight:700; font-size:4rem; color:var(--cream); }
+  #start-screen p.sub{ font-size:0.85rem; letter-spacing:1px; opacity:0.6; text-transform:uppercase; }
+
+  #stage-wrap{ position:relative; width:min(92vw, 820px); }
+  #stage{
+    position:relative; width:100%; aspect-ratio:8/5; border-radius:6px; overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,0.6); background:#1a2138;
+  }
+  #stage svg{ position:absolute; inset:0; width:100%; height:100%; display:block; shape-rendering:crispEdges; }
+
+  .signature{
+    position:absolute; bottom:8px; right:14px; font-family:'Caveat',cursive; font-style:italic;
+    font-size:1rem; color:rgba(245,235,216,0.75); z-index:5; pointer-events:none;
+    text-shadow:0 1px 2px rgba(0,0,0,0.8);
+  }
+  #stage-wrap::before{
+    content:''; position:absolute; inset:-40px; z-index:-1; border-radius:16px;
+    background: radial-gradient(ellipse at center, rgba(240,184,110,0.16) 0%, rgba(240,184,110,0) 72%);
+  }
+  .season-tag{
+    position:absolute; top:10px; left:12px; font-family:'Space Mono',monospace; font-size:0.62rem;
+    letter-spacing:1px; color:var(--cream); opacity:0.85; text-transform:uppercase; z-index:5;
+    background:rgba(0,0,0,0.45); padding:2px 7px; border-radius:3px;
+  }
+
+  #lyric-card{ text-align:center; max-width:88vw; min-height:2.4em; z-index:6; }
+  .lyric-line{
+    font-family:'Quicksand',sans-serif; font-weight:500;
+    font-size:clamp(1rem, 2.6vw, 1.5rem); color:var(--cream);
+    text-shadow:0 2px 10px rgba(0,0,0,0.6); filter:blur(6px); opacity:0;
+  }
+
+  #controls{ display:flex; gap:14px; align-items:center; z-index:20; opacity:0; transition:opacity 1s ease; }
+  #controls button{
+    background:rgba(0,0,0,0.3); border:1px solid rgba(245,235,216,0.35); color:var(--cream);
+    padding:7px 14px; border-radius:16px; font-size:0.75rem; cursor:pointer; letter-spacing:0.5px;
+  }
+  #controls button:hover{ border-color:var(--lamp); background:rgba(0,0,0,0.5); }
+</style>
+</head>
+<body>
+
+<div id="bg-stars"></div>
+<div id="bg-name-fireflies"></div>
+<div id="bg-glow"></div>
+
+<div id="scene">
+
+  <div id="start-screen">
+    <p class="dedication">made for Nurul Athirah</p>
+    <h1>Teh Hijau</h1>
+    <p class="sub">click to open the shop</p>
+  </div>
+
+  <div id="stage-wrap">
+    <div id="stage">
+      <div class="season-tag" id="season-tag">spring</div>
+      <div class="signature">— Ariffin</div>
+      <svg id="illustration" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="warm-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#f5d9a0" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#f5d9a0" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- sky -->
+        <rect id="sky-back" x="0" y="0" width="480" height="150" fill="#8fd0e0"/>
+        <rect id="sky-front" x="0" y="80" width="480" height="70" fill="#b7e3ea"/>
+
+        <!-- night sky effects: stars + shooting star, clipped to sky area -->
+        <clipPath id="sky-clip"><rect x="0" y="0" width="480" height="150"/></clipPath>
+        <g id="stars-layer" clip-path="url(#sky-clip)"></g>
+        <g id="shooting-star-layer" clip-path="url(#sky-clip)">
+          <line id="shooting-star" x1="0" y1="0" x2="26" y2="10" stroke="#fff8e0" stroke-width="2" stroke-linecap="round" opacity="0"/>
+        </g>
+
+        <!-- trees flanking the shop -->
+        <g id="tree-left">
+          <rect x="10" y="90" width="10" height="60" fill="#4a3324"/>
+          <circle id="canopy-l1" cx="15" cy="80" r="34" fill="#f3b6c9"/>
+          <circle id="canopy-l2" cx="-14" cy="95" r="24" fill="#f3b6c9"/>
+        </g>
+        <g id="tree-right">
+          <rect x="460" y="90" width="10" height="60" fill="#4a3324"/>
+          <circle id="canopy-r1" cx="455" cy="80" r="34" fill="#f3b6c9"/>
+          <circle id="canopy-r2" cx="484" cy="95" r="24" fill="#f3b6c9"/>
+        </g>
+
+        <g id="season-particles"></g>
+
+        <!-- ground -->
+        <rect id="ground-rect" x="0" y="260" width="480" height="40" fill="#c9a877"/>
+        <g stroke="#a8875a" stroke-width="2">
+          <line x1="0" y1="270" x2="480" y2="270"/>
+          <line x1="0" y1="285" x2="480" y2="285"/>
+        </g>
+
+        <!-- building wall -->
+        <rect x="40" y="130" width="400" height="130" fill="#e8c9b8" stroke="#3a281c" stroke-width="3"/>
+        <!-- roof strip -->
+        <rect x="30" y="118" width="420" height="16" fill="#7c9473" stroke="#3a281c" stroke-width="3"/>
+        <!-- soft light spill from the window, sits behind the window itself -->
+        <ellipse cx="300" cy="195" rx="150" ry="90" fill="url(#warm-glow)" opacity="0.55"/>
+
+        <!-- fairy lights strung along the roofline -->
+        <g id="fairy-lights"></g>
+
+        <!-- door with curtain -->
+        <g id="door">
+          <rect x="70" y="150" width="90" height="110" fill="#4a3324" stroke="#3a281c" stroke-width="3"/>
+          <rect x="78" y="158" width="74" height="96" fill="#2c1f18"/>
+          <g id="curtain" fill="#e0c9a0" opacity="0.92">
+            <rect x="80" y="158" width="9" height="96"/>
+            <rect x="93" y="158" width="9" height="96"/>
+            <rect x="106" y="158" width="9" height="96"/>
+            <rect x="119" y="158" width="9" height="96"/>
+            <rect x="132" y="158" width="9" height="96"/>
+            <rect x="145" y="158" width="7" height="96"/>
+          </g>
+        </g>
+
+        <!-- window with warm interior -->
+        <g id="window">
+          <rect x="190" y="150" width="220" height="90" fill="#8a3b3f" stroke="#3a281c" stroke-width="3"/>
+          <rect x="200" y="160" width="200" height="70" fill="#3a2a20"/>
+          <rect x="204" y="164" width="192" height="62" fill="#f0b86e" opacity="0.9"/>
+          <!-- counter -->
+          <rect x="204" y="205" width="192" height="21" fill="#5c4030"/>
+          <!-- barista silhouette -->
+          <g transform="translate(300,170)">
+            <circle cx="0" cy="10" r="4" fill="#4a3324"/>
+            <ellipse cx="0" cy="18" rx="13" ry="15" fill="#6b8e5a"/>
+            <circle cx="0" cy="0" r="12" fill="#c98f64"/>
+            <circle cx="0" cy="-9" r="6" fill="#4a3324"/>
+          </g>
+          <!-- pendant lamp -->
+          <line x1="340" y1="160" x2="340" y2="178" stroke="#3a281c" stroke-width="2"/>
+          <circle id="pendant-bulb" cx="340" cy="182" r="6" fill="#f5e0a8"/>
+          <!-- small shelf plant -->
+          <g transform="translate(230,196)">
+            <rect x="0" y="6" width="12" height="10" fill="#8a6349"/>
+            <path d="M6 6 Q0 -4 3 -10 M6 6 Q12 -4 9 -10" stroke="#5a7d52" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <rect x="190" y="150" width="220" height="90" fill="none" stroke="#3a281c" stroke-width="3"/>
+          <line x1="300" y1="150" x2="300" y2="240" stroke="#3a281c" stroke-width="3"/>
+        </g>
+
+        <!-- hanging sign above door -->
+        <g transform="translate(115,102)">
+          <circle cx="0" cy="22" r="42" fill="url(#warm-glow)" opacity="0.5"/>
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#3a281c" stroke-width="2"/>
+          <rect x="-58" y="10" width="116" height="30" rx="3" fill="#f5ebd8" stroke="#3a281c" stroke-width="2.5"/>
+          <text x="0" y="31" text-anchor="middle" font-family="'Caveat', cursive" font-weight="700" font-size="21" fill="#3a281c">Tiramisu Cafe</text>
+        </g>
+
+        <!-- bench + cat, right of window -->
+        <g transform="translate(370,232)">
+          <rect x="0" y="18" width="70" height="8" fill="#8a6349" stroke="#3a281c" stroke-width="2"/>
+          <rect x="4" y="26" width="6" height="16" fill="#5c4030"/>
+          <rect x="60" y="26" width="6" height="16" fill="#5c4030"/>
+          <g id="cat-group">
+            <ellipse id="cat-tail" cx="60" cy="10" rx="16" ry="6" fill="#e8a24f" transform="rotate(18)"/>
+            <ellipse cx="30" cy="12" rx="28" ry="14" fill="#e8a24f"/>
+            <path d="M8 2 L14 -8 L20 4 Z" fill="#e8a24f"/>
+            <path d="M40 2 L46 -8 L52 4 Z" fill="#e8a24f"/>
+            <path d="M2 10 Q10 14 16 10" stroke="#3a281c" stroke-width="1.5" fill="none"/>
+          </g>
+        </g>
+
+        <!-- potted plant beside bench -->
+        <g transform="translate(444,240)">
+          <rect x="0" y="18" width="16" height="14" fill="#8a3b3f"/>
+          <path d="M8 18 Q-4 0 2 -14 M8 18 Q20 0 14 -14 M8 18 Q8 -4 8 -18" stroke="#4a6b3f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- fireflies drift in front of everything -->
+        <g id="fireflies-layer"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="lyric-card"><div class="lyric-line" id="current-line"></div></div>
+
+  <div id="controls">
+    <button id="play-pause">pause</button>
+    <button id="restart">restart</button>
+  </div>
+
+  <!-- Put your mp3 next to this file, named teh-hijau.mp3 (or edit src below) -->
+  <audio id="song" src="teh-hijau.mp3" preload="auto"></audio>
+</div>
+
+<script>
+const lyrics = [
+  { time: 1.34,  text: "Mungkin" },
+  { time: 2.71,  text: "Aku sedang tak bisa" },
+  { time: 4.79,  text: "Tak bisa jatuh cinta" },
+  { time: 7.28,  text: "Membuka hati 'tuk apapun, siapapun" },
+  { time: 10.58, text: "Dan mungkin" },
+  { time: 11.93, text: "Aku memang sedang tak bisa" },
+  { time: 14.36, text: "Tak bisa jatuh cinta" },
+  { time: 16.70, text: "Membuka hati 'tuk apapun, siapapun" },
+  { time: 22.94, text: "Woah-oh, woah-oh-oh" },
+  { time: 27.34, text: "Apapun, Siapapun" },
+];
+const DURATION = 29;
+const SEASON_INTERVAL = 5000;
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const audio = document.getElementById('song');
+const lyricEl = document.getElementById('current-line');
+const startScreen = document.getElementById('start-screen');
+const controls = document.getElementById('controls');
+const playPauseBtn = document.getElementById('play-pause');
+const restartBtn = document.getElementById('restart');
+const seasonTag = document.getElementById('season-tag');
+
+let currentIndex = -1;
+let seasonIdx = 0;
+let seasonTimer = null;
+const seasons = ['spring','summer','autumn','winter'];
+
+/* night-toned sky per season — deep upper sky, warmer dusk glow near the rooftops */
+const skyBack   = { spring:'#232049', summer:'#171e42', autumn:'#241a38', winter:'#0d1330' };
+const skyFront  = { spring:'#5a4a72', summer:'#4a3a6a', autumn:'#5a3a4a', winter:'#2a3a5c' };
+const canopy    = { spring:'#c98aa6', summer:'#2e5a38', autumn:'#a85a2e', winter:'#5a626e' };
+const ground    = { spring:'#5a4a42', summer:'#48402e', autumn:'#4a3a28', winter:'#c8d2da' };
+
+/* ---------- Page-wide background stars (visible around the frame) ---------- */
+function buildBackgroundStars(){
+  const layer = document.getElementById('bg-stars');
+  const count = reduceMotion ? 40 : 90;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    const size = Math.random() < 0.12 ? 3 : (Math.random() < 0.4 ? 2 : 1);
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.opacity = 0.2+Math.random()*0.6;
+    if(Math.random() < 0.15) s.style.background = '#f5d9a0';
+    layer.appendChild(s);
+    if(!reduceMotion){
+      gsap.to(s, { opacity: 0.05+Math.random()*0.15, duration: 1.5+Math.random()*3, repeat:-1, yoyo:true, delay:Math.random()*4, ease:'sine.inOut' });
+    }
+  }
+}
+buildBackgroundStars();
+
+/* ---------- Name that glows and drifts around the background like a firefly ---------- */
+function buildNameFireflies(){
+  const layer = document.getElementById('bg-name-fireflies');
+  layer.innerHTML = '';
+  const NAME = 'Nurul Athirah';
+
+  if(reduceMotion){
+    const el = document.createElement('div');
+    el.className = 'name-firefly';
+    el.textContent = NAME;
+    el.style.left = '50%'; el.style.top = '8%'; el.style.opacity = 0.6;
+    layer.appendChild(el);
+    return;
+  }
+
+  const total = 3;
+  for(let i=0;i<total;i++){
+    const el = document.createElement('div');
+    el.className = 'name-firefly';
+    el.textContent = NAME;
+    layer.appendChild(el);
+    (function cycle(){
+      gsap.set(el, { left: (4+Math.random()*88)+'%', top: (4+Math.random()*88)+'%', opacity:0 });
+      gsap.timeline({ onComplete: cycle, delay: 1+Math.random()*4 })
+        .to(el, { opacity:1, duration:1.3, ease:'sine.inOut' })
+        .to(el, { opacity:0, duration:1.7, ease:'sine.inOut', delay:0.8 });
+    })();
+  }
+}
+buildNameFireflies();
+
+/* ---------- Lyrics sync ---------- */
+function showLine(text){
+  gsap.killTweensOf(lyricEl);
+  if(!text){ gsap.to(lyricEl, { opacity:0, filter:'blur(6px)', duration:0.6 }); return; }
+  gsap.set(lyricEl, { opacity:0, filter:'blur(6px)', y:8 });
+  lyricEl.textContent = text;
+  gsap.to(lyricEl, { opacity:1, filter:'blur(0px)', y:0, duration:1, ease:'power2.out' });
+}
+function syncLyrics(){
+  const t = audio.currentTime;
+  let idx = -1;
+  for(let i=0;i<lyrics.length;i++){ if(t >= lyrics[i].time) idx = i; else break; }
+  if(idx !== currentIndex){ currentIndex = idx; showLine(idx === -1 ? "" : lyrics[idx].text); }
+}
+audio.addEventListener('timeupdate', () => {
+  if(audio.currentTime >= DURATION){ audio.currentTime = 0; currentIndex = -1; }
+  syncLyrics();
+});
+
+/* ---------- Season (plain 5s timer, no interaction needed) ---------- */
+function applySeason(season){
+  seasonTag.textContent = season;
+  document.getElementById('sky-back').setAttribute('fill', skyBack[season]);
+  document.getElementById('sky-front').setAttribute('fill', skyFront[season]);
+  ['canopy-l1','canopy-l2','canopy-r1','canopy-r2'].forEach(id => document.getElementById(id).setAttribute('fill', canopy[season]));
+  document.querySelectorAll('#tree-left, #tree-right').forEach(t => t.style.opacity = season==='winter' ? 0.55 : 1);
+  document.getElementById('ground-rect').setAttribute('fill', ground[season]);
+  spawnSeasonParticles(season);
+}
+function tickSeason(){
+  seasonIdx = (seasonIdx+1) % 4;
+  applySeason(seasons[seasonIdx]);
+}
+
+/* ---------- Ambient particles ---------- */
+const particleConfig = {
+  spring:{ color:'#f7c6d6', count:8, mode:'fall' },
+  summer:{ color:'#f5e28a', count:6, mode:'drift' },
+  autumn:{ color:'#c97a3d', count:8, mode:'fall' },
+  winter:{ color:'#ffffff', count:12, mode:'fall' }
+};
+let pTweens = [];
+function spawnSeasonParticles(season){
+  const layer = document.getElementById('season-particles');
+  layer.innerHTML = '';
+  pTweens.forEach(t=>t.kill()); pTweens = [];
+  if(reduceMotion) return;
+  const cfg = particleConfig[season];
+  for(let i=0;i<cfg.count;i++){
+    const c = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    const s = 3+Math.random()*3;
+    const x = Math.random()*480, y = cfg.mode==='fall' ? -10-Math.random()*40 : 20+Math.random()*100;
+    c.setAttribute('width', s); c.setAttribute('height', s);
+    c.setAttribute('x', x); c.setAttribute('y', y);
+    c.setAttribute('fill', cfg.color); c.setAttribute('opacity', 0.7);
+    layer.appendChild(c);
+    if(cfg.mode==='fall'){
+      const tw = gsap.to(c, { attr:{ y:'+=280' }, opacity:0, duration:5+Math.random()*4, repeat:-1, delay:Math.random()*4, ease:'sine.inOut',
+        onRepeat(){ gsap.set(c, { attr:{ y:-10 }, opacity:0.7 }); } });
+      pTweens.push(tw);
+    } else {
+      const tw = gsap.to(c, { attr:{ x:`+=${(Math.random()-0.5)*40}`, y:`+=${(Math.random()-0.5)*30}` }, opacity:0.8, duration:3+Math.random()*3, repeat:-1, yoyo:true, ease:'sine.inOut' });
+      pTweens.push(tw);
+    }
+  }
+}
+
+/* ---------- Ambient idle motion ---------- */
+function idleAmbience(){
+  if(reduceMotion) return;
+  gsap.to('#pendant-bulb', { opacity:0.55, duration:1.8, repeat:-1, yoyo:true, ease:'sine.inOut' });
+  gsap.to('#cat-tail', { rotate:'+=14', duration:1.6, repeat:-1, yoyo:true, ease:'sine.inOut', transformOrigin:'left center' });
+}
+
+/* ---------- Starry sky ---------- */
+function buildStars(){
+  const layer = document.getElementById('stars-layer');
+  layer.innerHTML = '';
+  const count = reduceMotion ? 20 : 55;
+  for(let i=0;i<count;i++){
+    const s = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    const size = Math.random() < 0.15 ? 3 : 2;
+    s.setAttribute('width', size); s.setAttribute('height', size);
+    s.setAttribute('x', Math.random()*480); s.setAttribute('y', Math.random()*115);
+    s.setAttribute('fill', Math.random() < 0.2 ? '#ffe9b0' : '#ffffff');
+    s.setAttribute('opacity', 0.3+Math.random()*0.6);
+    layer.appendChild(s);
+    if(!reduceMotion){
+      gsap.to(s, { opacity: 0.15+Math.random()*0.25, duration: 1+Math.random()*2.5, repeat:-1, yoyo:true, delay:Math.random()*3, ease:'sine.inOut' });
+    }
+  }
+}
+
+/* ---------- Shooting stars: brief streak, random interval ---------- */
+function scheduleShootingStar(){
+  const delay = 4 + Math.random()*7;
+  gsap.delayedCall(delay, () => {
+    if(reduceMotion){ scheduleShootingStar(); return; }
+    const star = document.getElementById('shooting-star');
+    const startX = 40 + Math.random()*280, startY = 10 + Math.random()*40;
+    gsap.set(star, { attr:{ x1:startX, y1:startY, x2:startX+26, y2:startY+10 }, opacity:0 });
+    gsap.timeline({ onComplete: scheduleShootingStar })
+      .to(star, { opacity:1, duration:0.08 })
+      .to(star, { attr:{ x1:startX+120, y1:startY+46, x2:startX+146, y2:startY+56 }, opacity:0, duration:0.55, ease:'power1.in' });
+  });
+}
+
+/* ---------- Fireflies: soft glowing dots drifting near the trees/ground ---------- */
+function buildFireflies(){
+  const layer = document.getElementById('fireflies-layer');
+  layer.innerHTML = '';
+  if(reduceMotion) return;
+  for(let i=0;i<9;i++){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const core = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const x = 20 + Math.random()*440, y = 140 + Math.random()*130;
+    glow.setAttribute('cx', x); glow.setAttribute('cy', y); glow.setAttribute('r', 7);
+    glow.setAttribute('fill', '#d9f28a'); glow.setAttribute('opacity', 0.25);
+    core.setAttribute('cx', x); core.setAttribute('cy', y); core.setAttribute('r', 2);
+    core.setAttribute('fill', '#f0ffb0');
+    g.appendChild(glow); g.appendChild(core);
+    layer.appendChild(g);
+    gsap.to(g, {
+      x:`+=${(Math.random()-0.5)*70}`, y:`+=${(Math.random()-0.5)*50}`,
+      duration: 4+Math.random()*4, repeat:-1, yoyo:true, ease:'sine.inOut', delay:Math.random()*3
+    });
+    gsap.to([glow,core], { opacity: 0.1, duration: 0.8+Math.random()*1.2, repeat:-1, yoyo:true, delay:Math.random()*2, ease:'sine.inOut' });
+  }
+}
+
+/* ---------- Fairy lights along the roofline ---------- */
+function buildFairyLights(){
+  const layer = document.getElementById('fairy-lights');
+  layer.innerHTML = '';
+  const count = 14;
+  for(let i=0;i<count;i++){
+    const b = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const x = 36 + i*(408/(count-1));
+    b.setAttribute('cx', x); b.setAttribute('cy', 134); b.setAttribute('r', 3);
+    b.setAttribute('fill', '#f5d9a0');
+    layer.appendChild(b);
+    if(!reduceMotion){
+      gsap.to(b, { opacity:0.35, duration:1+Math.random(), repeat:-1, yoyo:true, delay:Math.random()*2, ease:'sine.inOut' });
+    }
+  }
+}
+
+/* ---------- Start / controls ---------- */
+startScreen.addEventListener('click', () => {
+  audio.play();
+  gsap.to(startScreen, { opacity:0, duration:0.9, onComplete:() => startScreen.style.display='none' });
+  gsap.to(controls, { opacity:1, duration:1, delay:0.4 });
+  applySeason('spring');
+  idleAmbience();
+  buildStars();
+  buildFireflies();
+  buildFairyLights();
+  scheduleShootingStar();
+  seasonTimer = setInterval(tickSeason, SEASON_INTERVAL);
+});
+playPauseBtn.addEventListener('click', () => {
+  if(audio.paused){ audio.play(); playPauseBtn.textContent='pause'; } else { audio.pause(); playPauseBtn.textContent='play'; }
+});
+restartBtn.addEventListener('click', () => {
+  audio.currentTime = 0; currentIndex = -1;
+  audio.play(); playPauseBtn.textContent='pause';
+});
+</script>
+</body>
+</html>
