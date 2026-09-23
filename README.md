@@ -4,6 +4,8 @@ A small animated pixel-style tea shop, made as a gift. A night scene of "Tiramis
 
 Single HTML file, no build step.
 
+**Live site:** https://tehhijau.netlify.app
+
 ## Run it
 
 1. Clone or download this repo.

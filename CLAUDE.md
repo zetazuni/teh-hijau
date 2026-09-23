@@ -96,3 +96,10 @@ Note: the "Known quirks" list above describes v1; season-timer and `play()` issu
 - Public GitHub repo, MIT-licensed. The README states that the mp3 and on-screen lyrics belong to their original rights holders and are excluded from the MIT grant. Keep that wording if the README is edited, and remove/replace the audio if a rights holder objects.
 - GSAP (`gsap.min.js`) keeps its own GreenSock license; fonts are Google Fonts (OFL).
 - Workflow: edit `teh-hijau-shopfront-v2.html`, keep v1 untouched, update this file and the README when behaviour changes, then commit and push to `main` (the owner's own repo; push only when asked).
+
+## Deployment
+
+- Live at https://tehhijau.netlify.app (Netlify site `tehhijau`, id `bf21806f-d3f2-4793-9b11-41c62141ec80`, team Zeta Solutions).
+- Linked to this repo (`zetazuni/teh-hijau`, branch `main`) in Netlify *manual* mode: a read-only deploy key on the repo, plus a GitHub push webhook that calls a Netlify build hook. Pushing to `main` redeploys; no build command, publish dir `.`.
+- `netlify.toml` rewrites `/` to `teh-hijau-shopfront-v2.html`. Everything in the repo root is published (README, CLAUDE.md, v1 included).
+- If the auto-deploy ever stops: check the repo's webhooks (Settings > Webhooks) and the deploy key still exist, or deploy by hand with `netlify deploy --prod --dir <folder> --site bf21806f-d3f2-4793-9b11-41c62141ec80`.
